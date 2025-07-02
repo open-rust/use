@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>File browser</title>
+    <script>
+    </script>
+
+    <style>
+        html {
+            width: 100%;
+            height: 100%;
+        }
+
+        body,
+        div {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .title {
+            background: darkcyan;
+            color: #0ff;
+            padding: 15px 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.7rem;
+            font-weight: bold;
+            text-shadow: 0 0 8px #0ff;
+            border: 1px solid #0ff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+        }
+
+        .list {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: black;
+            padding: 15px 25px;
+            font-size: 1.6rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        .list {
+            /* background-color: pink; */
+            padding: 6px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        a.dir::before {
+            content: "📁 ";
+            margin-right: 5px;
+        }
+
+        a.dir {
+            color: darkred;
+        }
+
+        a.file::before {
+            content: "📄 ";
+            margin-right: 5px;
+        }
+
+        a.file {
+            color: green;
+        }
+    </style>
+</head>
+<div class="title">
+    <span>文件浏览器: </span><span id="pwd"></span>
+</div>
+<div class="list">
+    <table id="ls">
+    </table>
+</div>
+<script>
+    function handleName(str) {
+        const tmp = decodeURIComponent(str).replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        // console.log(`替换${str} -> ${tmp}`)
+        return tmp
+    }
+
+    function updateList(target) {
+        const r = JSON.parse(target.responseText)
+        const pwd = decodeURIComponent(r.pwd)
+
+        let parent = ""
+        const mr = pwd.match(/(.*)\//)
+        if (mr != null) { parent = mr[1] } else { parent = "/" }
+
+        // console.log(`pwd -> ${pwd}`)
+        // console.log(`parent -> ${parent}`)
+
+        const spanPwd = document.querySelector("span#pwd")
+        spanPwd.innerText = decodeURIComponent(handleName(pwd))
+        const tableLs = document.querySelector("table#ls")
+        tableLs.innerHTML = `<tr><td><a href="javascript: ls('${decodeURI(parent)}')">返回上一级目录</a></td></tr>`;
+        for (let i = 0; i < r.dirs.length; i++) {
+            tableLs.innerHTML += `<tr><td><a class="dir" href="javascript: ls('${r.pwd}/${r.dirs[i]}')">${handleName(r.dirs[i])}</a></td></tr>`;
+        }
+        for (let i = 0; i < r.files.length; i++) {
+            var _href = './fs/' + r.pwd + '/' + r.files[i];
+            _href = _href.replace('//', '/');
+            tableLs.innerHTML += `<tr><td><a class="file" target="_blank" href="${_href}">${handleName(r.files[i])}</a></td></tr>`;
+        }
+    }
+
+    function ls(path) {
+        var xhr = new XMLHttpRequest();
+        console.log(`${xhr.readyState} -> UNSET 对象创建完成`);
+        xhr.open(method = "GET", url = `/ls?${path}`);
+        xhr.timeout = 2000
+        xhr.ontimeout = event => {
+            console.log("timeout")
+            alert("加载失败！")
+        }
+        console.log(`${xhr.readyState} -> OPENED 已设置open目标`);
+        xhr.addEventListener(
+            "readystatechange", event => {
+                switch (event.target.readyState) {
+                    case 2:
+                        console.log(`${xhr.readyState} -> HEADERS_RECEIVED 已调用send方法`);
+                        break;
+                    case 3:
+                        console.log(`${xhr.readyState} -> LOADING 接收response中`);
+                        break;
+                    case 4:
+                        console.log(`${xhr.readyState} -> DONE response接收完毕`);
+                        updateList(event.target);
+                        break;
+                    default:
+                        console.log("Unknown state");
+                }
+            }
+        )
+        xhr.send();
+    }
+
+    ls("");
+</script>
+
+</html>

@@ -1,0 +1,17 @@
+[package]
+name = "use"
+description = "像 BusyBox 一样, 把多个实用命令集合在一个二进制文件中"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+axum = "0.8.4"
+clap = { version = "4.5.40", features = ["derive"] }
+ifcfg = "0.1.2"
+macro-log = "0.3.0"
+normalize-path = "0.2.1"
+regex = "1.11.1"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"
+tokio = { version = "1.45.1", features = ["fs", "macros", "rt-multi-thread"] }
+tower-http = { version = "0.6.6", features = ["fs"] }
