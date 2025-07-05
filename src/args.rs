@@ -10,4 +10,5 @@ pub struct Args {
 #[derive(Parser, Debug, Clone)]
 pub enum Commands {
     Fs(crate::mods::fs::Param),
+    Loop(crate::mods::looper::Param),
 }
