@@ -3,7 +3,7 @@ use std::path::Path;
 
 pub fn normalize_path(path: &str) -> String {
     let path = Path::new(path);
-    path.normalize().display().to_string()
+    path.normalize().display().to_string().replace("\\", "/")
 }
 
 #[test]
