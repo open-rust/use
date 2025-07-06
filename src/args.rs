@@ -11,4 +11,5 @@ pub struct Args {
 pub enum Commands {
     Fs(crate::mods::fs::Param),
     Loop(crate::mods::looper::Param),
+    Limit(limit::args::Args),
 }

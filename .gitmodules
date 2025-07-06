@@ -1,0 +1,4 @@
+[submodule "cmds/limit"]
+	path = cmds/limit
+	url = git@github.com:rust-net/limit.git
+	branch = use

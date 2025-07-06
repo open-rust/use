@@ -531,6 +531,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1171693293099992e19cddea4e8b849964e9846f4acee11b3948bcc337be8776"
 
 [[package]]
+name = "limit"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ifcfg",
+ "macro-log",
+ "regex 1.11.1",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "log"
 version = "0.3.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1046,6 +1058,7 @@ dependencies = [
  "axum",
  "clap",
  "ifcfg",
+ "limit",
  "macro-log",
  "normalize-path",
  "regex 1.11.1",
