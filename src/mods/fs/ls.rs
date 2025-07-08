@@ -1,6 +1,6 @@
 use axum::{extract::{RawQuery, State}, http::StatusCode, response::IntoResponse, Json};
 
-use crate::{mods::fs::Param, utils::fs::normalize_path};
+use crate::{mods::fs::Param, utils::fs::{decode_uri, normalize_path}};
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, Default)]
 pub struct Response {
@@ -11,6 +11,9 @@ pub struct Response {
 
 pub async fn ls(RawQuery(dir): RawQuery, State(param): State<Param>) -> Result<impl IntoResponse, impl IntoResponse> {
     let Some(raw_dir) = dir else {
+        return Err((StatusCode::BAD_REQUEST, "BAD_REQUEST".into()));
+    };
+    let Some(raw_dir) = decode_uri(&raw_dir) else {
         return Err((StatusCode::BAD_REQUEST, "BAD_REQUEST".into()));
     };
     // 相对路径
@@ -35,8 +38,8 @@ pub async fn ls(RawQuery(dir): RawQuery, State(param): State<Param>) -> Result<i
                     Ok(file_type) if file_type.is_symlink() => {
                         if let Ok(it) = tokio::fs::metadata(dir.path()).await {
                             match true {
-                                true if it.is_dir() => resp.dirs.push(normalize_path(&name)),
-                                true if it.is_file() => resp.files.push(normalize_path(&name)),
+                                _ if it.is_dir() => resp.dirs.push(normalize_path(&name)),
+                                _ if it.is_file() => resp.files.push(normalize_path(&name)),
                                 _ => ()
                             }
                         }
