@@ -12,5 +12,6 @@ pub enum Commands {
     Fs(crate::mods::fs::Param),
     Loop(crate::mods::looper::Param),
     Limit(limit::args::Args),
+    RBS(crate::mods::rbs::Param),
     Install(crate::mods::install::Param),
 }

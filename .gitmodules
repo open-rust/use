@@ -2,3 +2,7 @@
 	path = cmds/limit
 	url = git@github.com:rust-net/limit.git
 	branch = use
+[submodule "cmds/remote-bind"]
+	path = cmds/remote-bind
+	url = git@github.com:rust-net/remote-bind.git
+	branch = use

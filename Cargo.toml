@@ -18,3 +18,6 @@ tower-http = { version = "0.6.6", features = ["fs"] }
 
 [dependencies.limit]
 path = "./cmds/limit"
+
+[dependencies.core]
+path = "./cmds/remote-bind/core"
