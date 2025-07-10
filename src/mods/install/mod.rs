@@ -21,7 +21,12 @@ pub async fn main(param: Param) -> tokio::io::Result<()> {
     let is_docker = is_running_in_docker();
     let exe = std::env::current_exe()?;
     let file = tokio::fs::read(exe).await?;
-    let mut dest = format!("{}{}use", &param.dest, std::path::MAIN_SEPARATOR);
+    let mut dest = format!(
+        "{}{}use{}",
+        &param.dest,
+        std::path::MAIN_SEPARATOR,
+        if cfg!(windows) { ".exe" } else { "" }
+    );
     if is_docker {
         dest = format!("/host{}", dest);
     }
