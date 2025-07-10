@@ -1,3 +1,4 @@
+#[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 
 use clap::Parser;
@@ -25,7 +26,8 @@ pub async fn main(param: Param) -> tokio::io::Result<()> {
         dest = format!("/host{}", dest);
     }
     tokio::fs::write(&dest, &file).await?;
-    if cfg!(unix) {
+    #[cfg(unix)]
+    {
         let mut perms = tokio::fs::metadata(&dest).await?.permissions();
         let mode = perms.mode();
         perms.set_mode(mode | 0b001001001); // chmod +x

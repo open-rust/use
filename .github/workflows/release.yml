@@ -40,7 +40,7 @@ jobs:
             ~/.cargo
             ~/.rustup
             ./target
-          key: ${{ runner.os }}-${{ env.file }}-cache
+          key: ${{ runner.os }}-${{ matrix.file }}-cache
 
       - name: Build
         env:
