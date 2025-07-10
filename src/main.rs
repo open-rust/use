@@ -12,6 +12,7 @@ async fn main() -> tokio::io::Result<()> {
         args::Commands::Loop(param) => mods::looper::main(param).await,
         args::Commands::Limit(param) => limit::main(param),
         args::Commands::RBS(param) => mods::rbs::main(param).await,
+        args::Commands::RBC(param) => mods::rbc::main(param).await,
         args::Commands::Install(param) => mods::install::main(param).await,
     }
 }

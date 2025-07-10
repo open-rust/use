@@ -13,5 +13,6 @@ pub enum Commands {
     Loop(crate::mods::looper::Param),
     Limit(limit::args::Args),
     RBS(crate::mods::rbs::Param),
+    RBC(crate::mods::rbc::Param),
     Install(crate::mods::install::Param),
 }
