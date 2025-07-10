@@ -4,5 +4,5 @@ linker = "musl-gcc"
 [target.aarch64-unknown-linux-musl]
 linker = "musl-gcc"
 
-[target.x86_64-pc-windows-msvc]
+[target.'cfg(windows)']
 rustflags = ["-C", "target-feature=+crt-static"]
