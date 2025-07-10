@@ -14,7 +14,7 @@ jobs:
       matrix:
         os:
           - windows-latest
-          - ubuntu-latest
+          - ubuntu-latest # target: x86_64-unknown-linux-musl
           - macos-latest
         file:
           - ${{ github.event.repository.name }}
@@ -23,8 +23,10 @@ jobs:
       run:
         shell: bash
     env:
-      # 构建文件路径, Windows 平台有 .exe 后缀
-      NAME: ${{ format('target/release/{0}{1}', matrix.file, startsWith(matrix.os, 'windows') && '.exe' || '') }}
+      # 不同构建目标对应的 release 目录
+      TARGET: ${{ matrix.os == 'ubuntu-latest' && 'target/x86_64-unknown-linux-musl/release' || 'target/release' }}
+      # 构建文件名, Windows 平台有 .exe 后缀
+      NAME: ${{ format('{0}{1}', matrix.file, startsWith(matrix.os, 'windows') && '.exe' || '') }}
       # 上传制品文件名
       ARTIFACT_NAME: Binary-${{ matrix.file }}-${{ matrix.os }}
     steps:
@@ -42,38 +44,54 @@ jobs:
             ./target
           key: ${{ runner.os }}-${{ matrix.file }}-cache
 
+      - name: musl-tools
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt install -y musl-tools
+
+      - name: Rustup
+        if: steps.cache.outputs.cache-hit != 'true' && matrix.os == 'ubuntu-latest'
+        run: |
+          rustup target add x86_64-unknown-linux-musl
+
       - name: Build
         env:
           CARGO_TERM_COLOR: always
-        run: cargo build --release --verbose
+        run: |
+          cargo build --release --verbose \
+            ${{ matrix.os == 'ubuntu-latest' && '--target x86_64-unknown-linux-musl' || '--' }}
 
-      - name: Naming ${{ env.NEW_NAME }}
+      - name: Naming ${{ env.NAMING }}
         id: naming
         env:
-          NEW_NAME: >-
-            ${{ format('target/release/{0}-{1}-{2}-{3}{4}',
-              matrix.file, github.ref_name, runner.os, runner.arch, startsWith(matrix.os, 'windows') && '.exe' || '') }}
+          NAMING: >-
+            ${{
+              format('{0}-{1}-{2}-{3}{4}',
+                matrix.file, github.ref_name, runner.os, runner.arch,
+                startsWith(matrix.os, 'windows') && '.exe' || ''
+              )
+            }}
         run: |
-          export NAME="$( echo ${{ env.NEW_NAME }} | tr [:upper:] [:lower:] )"
-          echo "FILENAME=$NAME" >> $GITHUB_OUTPUT
+          export NAMING="$( echo ${{ env.NAMING }} | tr [:upper:] [:lower:] )"
+          echo "FILEPATH=$TARGET/$NAMING" >> $GITHUB_OUTPUT
 
       - name: Rename file
         run: |
-          mv $NAME ${{ steps.naming.outputs.FILENAME }}
+          mv "$TARGET/$NAME" ${{ steps.naming.outputs.FILEPATH }}
 
       - name: Upload
         uses: actions/upload-artifact@master
         id: artifact-upload-step
         with:
           name: ${{ env.ARTIFACT_NAME }}
-          path: ${{ steps.naming.outputs.FILENAME }}
+          path: ${{ steps.naming.outputs.FILEPATH }}
 
       - name: GH Release on ${{ matrix.os }}
         uses: softprops/action-gh-release@v2.0.2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          files: ${{ steps.naming.outputs.FILENAME }}
+          files: ${{ steps.naming.outputs.FILEPATH }}
 
       - name: Done
         if: startsWith(github.ref, 'refs/tags/')
