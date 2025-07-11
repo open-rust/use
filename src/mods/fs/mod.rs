@@ -28,7 +28,7 @@ pub async fn main(param: Param) -> tokio::io::Result<()> {
             axum::routing::get(|| async { Html(include_bytes!("index.html")) }),
         )
         .route("/ls", axum::routing::get(ls::ls))
-        .nest_service("/fs", tower_http::services::ServeDir::new(&param.dir))
+        .fallback_service(tower_http::services::ServeDir::new(&param.dir))
         .with_state(param.clone())
         .into_make_service();
     let listener =
