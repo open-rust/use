@@ -43,9 +43,6 @@ pub async fn main(param: Param) -> tokio::io::Result<()> {
     let cmd = display_cmd(&param.cmd);
     loop {
         count += 1;
-        if param.count != 0 && count > param.count {
-            break;
-        }
         macro_log::i!("执行命令: {}", cmd);
         // let _ = run(&param.cmd, param.timeout).await;
         let cmd = param.cmd.clone();
@@ -59,6 +56,9 @@ pub async fn main(param: Param) -> tokio::io::Result<()> {
             }
             Ok(Err(e)) => macro_log::e!("{e}"),
             Err(e) => macro_log::e!("{e}"),
+        }
+        if param.count != 0 && count >= param.count {
+            break;
         }
         tokio::time::sleep(tokio::time::Duration::from_secs(param.delay)).await;
     }
