@@ -14,5 +14,6 @@ pub enum Commands {
     Limit(limit::args::Args),
     RBS(crate::mods::rbs::Param),
     RBC(crate::mods::rbc::Param),
+    Oneport(crate::mods::oneport::Param),
     Install(crate::mods::install::Param),
 }
