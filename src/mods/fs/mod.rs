@@ -2,6 +2,7 @@ mod ls;
 
 use axum::response::Html;
 use clap::Parser;
+use tower_http::cors::CorsLayer;
 
 use crate::utils::ip::{get_interface_ipv4s, get_public_ip};
 
@@ -29,6 +30,7 @@ pub async fn main(param: Param) -> tokio::io::Result<()> {
         )
         .route("/ls", axum::routing::get(ls::ls))
         .fallback_service(tower_http::services::ServeDir::new(&param.dir))
+        .layer(CorsLayer::permissive())
         .with_state(param.clone())
         .into_make_service();
     let listener =

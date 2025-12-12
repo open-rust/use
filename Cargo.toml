@@ -15,7 +15,7 @@ regex = "1.11.1"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
 tokio = { version = "1.45.1", features = ["fs", "macros", "process", "rt-multi-thread"] }
-tower-http = { version = "0.6.6", features = ["fs"] }
+tower-http = { version = "0.6.6", features = ["fs", "cors"] }
 yaml-rust = "0.4.5"
 
 [dependencies.limit]
