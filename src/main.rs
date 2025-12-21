@@ -1,6 +1,7 @@
 use clap::Parser;
 
 mod args;
+mod ffi;
 mod mods;
 mod utils;
 
@@ -14,6 +15,7 @@ async fn main() -> tokio::io::Result<()> {
         args::Commands::RBS(param) => mods::rbs::main(param).await,
         args::Commands::RBC(param) => mods::rbc::main(param).await,
         args::Commands::Oneport(param) => mods::oneport::main(param).await,
+        args::Commands::Toast(param) => mods::toast::main(param).await,
         args::Commands::Install(param) => mods::install::main(param).await,
     }
 }

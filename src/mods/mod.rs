@@ -5,3 +5,5 @@ pub mod rbc;
 pub mod oneport;
 pub mod install;
  
+#[cfg(windows)]
+pub mod toast;

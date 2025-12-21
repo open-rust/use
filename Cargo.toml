@@ -23,3 +23,7 @@ path = "./cmds/limit"
 
 [dependencies.core]
 path = "./cmds/remote-bind/core"
+
+[build-dependencies]
+cc = "1.2.50"
+macro-log = "0.3.0"
