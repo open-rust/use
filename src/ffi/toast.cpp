@@ -29,7 +29,8 @@ void createChildWindow(HWND parent) {
 		0,
 		_T("static"), (_TCHAR*)_T(""),
 		WS_CHILD | WS_VISIBLE | // 可见控件
-		SS_CENTER | SS_CENTERIMAGE, // 水平、垂直居中
+		// SS_CENTER | SS_CENTERIMAGE, // 水平、垂直居中
+		0, // 禁止水平、垂直居中
 		0, 0,
 		WIDTH, HEIGHT,
 		parent,
@@ -128,7 +129,8 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 		WS_POPUP |
 		0,
 		// Size and position
-		(scrWidth - WIDTH) / 2, (scrHeight - HEIGHT),
+		// (scrWidth - WIDTH) / 2, (scrHeight - HEIGHT),
+		0, 0, // 初始化位置位于左上角
 		WIDTH, HEIGHT,
 		consoleWnd,       // Parent window
 		NULL,       // Menu
@@ -247,4 +249,11 @@ void setFont(int size, char *font) {
 	);
 	SendMessageW(txtWnd, WM_SETFONT, (WPARAM)hFont, TRUE); // 设置控件字体
 	Perror("设置字体");
+}
+
+extern "C"
+DllExport
+void setAlpha(uint8_t alpha) {
+	// alpha: 设置窗口整体不透明度(0~255, 0为完全透明, 255为完全不透明)
+	SetLayeredWindowAttributes(mainWnd, 0xffffff, alpha, LWA_COLORKEY | LWA_ALPHA);
 }

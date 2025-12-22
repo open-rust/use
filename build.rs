@@ -4,6 +4,7 @@ fn debug(obj: &impl std::fmt::Debug, tag: &str) {
     println!("cargo:warning=[Debug] {}: {tag} -> {obj:?}", file!());
 }
 
+#[cfg(windows)]
 fn main() {
     let mut cc = cc::Build::new();
     read_dir!("src/ffi").iter().for_each(|(file_name, _)| {
