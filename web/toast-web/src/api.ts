@@ -1,0 +1,3 @@
+export function getBaseURL() {
+    return location.origin ?? 'http://127.0.0.1:7878'
+}

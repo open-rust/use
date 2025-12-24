@@ -15,3 +15,7 @@ fn main() {
     });
     cc.compile("ffi");
 }
+
+#[cfg(not(windows))]
+fn main() {
+}

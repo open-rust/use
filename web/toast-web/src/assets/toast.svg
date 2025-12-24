@@ -1,0 +1,25 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background rounded square -->
+  <rect x="0" y="0" width="512" height="512" rx="100" ry="100" fill="#D2B48C"/>
+  
+  <!-- Darker shadow circle -->
+  <ellipse cx="256" cy="300" rx="200" ry="180" fill="#8B6914" opacity="0.3"/>
+  
+  <!-- Toast bread -->
+  <path d="M156 156 Q156 106 206 106 L306 106 Q356 106 356 156 L356 356 Q356 406 306 406 L206 406 Q156 406 156 356 Z" fill="#DEB887"/>
+  
+  <!-- Crust outline -->
+  <path d="M156 156 Q156 106 206 106 L306 106 Q356 106 356 156 L356 356 Q356 406 306 406 L206 406 Q156 406 156 356 Z" stroke="#CD853F" stroke-width="20" fill="none"/>
+  
+  <!-- Top highlight on crust -->
+  <path d="M206 106 L306 106" stroke="#F5DEB3" stroke-width="20" opacity="0.8"/>
+  
+  <!-- Toast dots (holes) -->
+  <circle cx="200" cy="200" r="10" fill="#D2691E" opacity="0.4"/>
+  <circle cx="250" cy="180" r="8" fill="#D2691E" opacity="0.4"/>
+  <circle cx="300" cy="220" r="12" fill="#D2691E" opacity="0.4"/>
+  <circle cx="220" cy="280" r="9" fill="#D2691E" opacity="0.4"/>
+  <circle cx="280" cy="300" r="11" fill="#D2691E" opacity="0.4"/>
+  <circle cx="180" cy="320" r="7" fill="#D2691E" opacity="0.4"/>
+  <circle cx="320" cy="260" r="10" fill="#D2691E" opacity="0.4"/>
+</svg>

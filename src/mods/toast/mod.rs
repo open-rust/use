@@ -1,3 +1,5 @@
+mod web;
+
 use axum::extract::Query;
 use clap::Parser;
 use serde::Deserialize;
@@ -8,7 +10,7 @@ use crate::{ffi::{set_toast_alpha, set_toast_position, set_toast_wh, show_toast}
 #[derive(Parser, Debug, Clone)]
 #[command(version = "0.0.1", about = "Windows文本消息吐司API服务", long_about = "Windows文本消息吐司API服务
 API:
-- GET http://IP:PORT/toast?msg=123456&time=2000 (设置消息与显示时长)
+- GET http://IP:PORT/toast?msg=123456&time=2000 (设置消息与显示时长[毫秒], 0为永久显示)
 - GET http://IP:PORT/setpos?x=1000&y=550 (设置窗口位置)
 - GET http://IP:PORT/setwh?w=860&h=200 (设置窗口宽高)
 - GET http://IP:PORT/setalpha?alpha=190 (设置窗口整体不透明度, 0为完全透明, 255为完全不透明)
@@ -62,12 +64,21 @@ async fn handler_set_alpha(Query(alpha): Query<Alpha>) {
     set_toast_alpha(alpha.alpha);
 }
 
+#[cfg(windows)]
+#[allow(unused)]
+unsafe extern "system" {
+    fn FreeConsole();
+    fn AllocConsole();
+    fn WinExec(cmd: *const u8, cmdShow: u8);
+}
+
 pub async fn main(param: Param) -> tokio::io::Result<()> {
     let router = axum::Router::new()
         .route("/toast", axum::routing::get(handler))
         .route("/setpos", axum::routing::get(handler_setpos))
         .route("/setwh", axum::routing::get(handler_setwh))
         .route("/setalpha", axum::routing::get(handler_set_alpha))
+        .fallback_service(web::route_assets())
         .layer(CorsLayer::permissive())
         .with_state(param.clone())
         .into_make_service();
@@ -84,6 +95,12 @@ pub async fn main(param: Param) -> tokio::io::Result<()> {
         show_toast("服务已启动, 调用/toast接口, 您的消息将在这里显示", 0);
         set_toast_position(1000, 550);
     });
+    #[cfg(windows)]
+    unsafe {
+        WinExec(format!("explorer http://127.0.0.1:{}\0", port).as_ptr(), 0);
+        // FreeConsole();
+        // AllocConsole();
+    }
     axum::serve(listener, router).await?;
     Ok(())
 }

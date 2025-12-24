@@ -15,6 +15,7 @@ pub enum Commands {
     RBS(crate::mods::rbs::Param),
     RBC(crate::mods::rbc::Param),
     Oneport(crate::mods::oneport::Param),
+    #[cfg(windows)]
     Toast(crate::mods::toast::Param),
     Install(crate::mods::install::Param),
 }

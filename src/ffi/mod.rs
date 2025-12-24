@@ -1,5 +1,6 @@
 use std::ffi::{c_int, c_uchar, c_uint};
 
+#[cfg(windows)]
 unsafe extern "C" {
     unsafe fn init_float_window() -> c_int;
     unsafe fn toast(msg: *const u16, time: c_uint);
