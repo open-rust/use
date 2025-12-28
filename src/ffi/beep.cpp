@@ -3,6 +3,8 @@
 #include <math.h>
 #include <Windows.h>
 
+#include <thread>
+
 #define M_PI       3.14159265358979323846   // pi
 
 // 生成带淡入淡出的正弦波 WAV 数据到内存缓冲区
@@ -111,6 +113,7 @@ BYTE* GenerateDing(double frequency, double duration_seconds, DWORD* out_size) {
     return wav;
 }
 
+static uint32_t playing = 0;
 extern "C"
 void beep(uint32_t time) {
     // Beep(440, time);
@@ -128,8 +131,15 @@ void beep(uint32_t time) {
 
     // 循环播放警告音（异步 + 循环）
     PlaySoundA((LPCSTR)wavData, NULL, SND_MEMORY | SND_ASYNC | SND_LOOP);
+    playing++;
 
-    Sleep(time);
-    PlaySoundA((LPCSTR)NULL, NULL, SND_SYNC);
+    std::thread cancel([=] {
+        Sleep(time);
+        if (playing < 2) {
+            PlaySoundA((LPCSTR)NULL, NULL, SND_SYNC);
+        }
+        playing--;
+    });
+    cancel.detach();
     delete[] wavData;
 }
