@@ -5,16 +5,21 @@ use clap::Parser;
 use serde::Deserialize;
 use tower_http::cors::CorsLayer;
 
-use crate::{ffi::{set_toast_alpha, set_toast_position, set_toast_wh, show_toast}, utils::ip::get_public_ip};
+use crate::{ffi::*, utils::ip::get_public_ip};
 
 #[derive(Parser, Debug, Clone)]
-#[command(version = "0.0.1", about = "Windows文本消息吐司API服务", long_about = "Windows文本消息吐司API服务
+#[command(
+    version = "0.0.1",
+    about = "Windows文本消息吐司API服务",
+    long_about = "Windows文本消息吐司API服务
 API:
 - GET http://IP:PORT/toast?msg=123456&time=2000 (设置消息与显示时长[毫秒], 0为永久显示)
+- GET http://IP:PORT/beep&time=2000 (播放警告音)
 - GET http://IP:PORT/setpos?x=1000&y=550 (设置窗口位置)
 - GET http://IP:PORT/setwh?w=860&h=200 (设置窗口宽高)
 - GET http://IP:PORT/setalpha?alpha=190 (设置窗口整体不透明度, 0为完全透明, 255为完全不透明)
-")]
+"
+)]
 pub struct Param {
     /// 绑定地址
     #[arg(long, short, default_value_t = String::from("127.0.0.1"))]
@@ -72,9 +77,19 @@ unsafe extern "system" {
     fn WinExec(cmd: *const u8, cmdShow: u8);
 }
 
+#[derive(Deserialize)]
+struct Beep {
+    time: Option<u32>,
+}
+
+async fn handler_beep(Query(beep): Query<Beep>) {
+    play_beep(beep.time.unwrap_or(5000));
+}
+
 pub async fn main(param: Param) -> tokio::io::Result<()> {
     let router = axum::Router::new()
         .route("/toast", axum::routing::get(handler))
+        .route("/beep", axum::routing::get(handler_beep))
         .route("/setpos", axum::routing::get(handler_setpos))
         .route("/setwh", axum::routing::get(handler_setwh))
         .route("/setalpha", axum::routing::get(handler_set_alpha))

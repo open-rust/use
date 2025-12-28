@@ -2,11 +2,14 @@ use std::ffi::{c_int, c_uchar, c_uint};
 
 #[cfg(windows)]
 unsafe extern "C" {
+    // toast.cpp
     unsafe fn init_float_window() -> c_int;
     unsafe fn toast(msg: *const u16, time: c_uint);
     unsafe fn setPos(x: c_int, y: c_int);
     unsafe fn setWH(width: c_int, height: c_int);
     unsafe fn setAlpha(alpha: c_uchar);
+    // beep.cpp
+    unsafe fn beep(time: c_uint);
 }
 
 #[cfg(windows)]
@@ -41,5 +44,12 @@ pub fn set_toast_wh(width: c_int, height: c_int) {
 pub fn set_toast_alpha(alpha: u8) {
     unsafe {
         setAlpha(alpha);
+    }
+}
+
+#[cfg(windows)]
+pub fn play_beep(time: u32) {
+    unsafe {
+        beep(time);
     }
 }

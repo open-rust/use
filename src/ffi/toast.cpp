@@ -130,7 +130,8 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstanc
 		0,
 		// Size and position
 		// (scrWidth - WIDTH) / 2, (scrHeight - HEIGHT),
-		0, 0, // 初始化位置位于左上角
+		// 0, 0, // 初始化位置位于左上角
+		scrWidth - 880, scrHeight - 100, // 初始化位置位于右下角
 		WIDTH, HEIGHT,
 		consoleWnd,       // Parent window
 		NULL,       // Menu
