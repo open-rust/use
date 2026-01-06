@@ -1,6 +1,7 @@
 mod ls;
+mod serve_dir;
 
-use axum::response::Html;
+use axum::{middleware, response::Html};
 use clap::Parser;
 use tower_http::cors::CorsLayer;
 
@@ -23,13 +24,20 @@ pub struct Param {
 }
 
 pub async fn main(param: Param) -> tokio::io::Result<()> {
+    // 仅对 fallback 应用中间件
+    let router = axum::Router::new()
+        // .fallback_service(tower_http::services::ServeDir::new(&param.dir)) // 必须有 route 才能 fallback
+        .route_service("/{*wildcard}", tower_http::services::ServeDir::new(&param.dir))
+        .route_layer(middleware::from_fn_with_state(param.clone(), serve_dir::add_gzip_encoding));
+    // 合并路由或者设置 fallback 路由
     let router = axum::Router::new()
         .route(
             "/",
             axum::routing::get(|| async { Html(include_bytes!("index.html")) }),
         )
         .route("/ls", axum::routing::get(ls::ls))
-        .fallback_service(tower_http::services::ServeDir::new(&param.dir))
+        // .merge(router) // 合并路由
+        .fallback_service(router) // 设置 fallback 路由
         .layer(CorsLayer::permissive())
         .with_state(param.clone())
         .into_make_service();
