@@ -18,11 +18,18 @@ pub async fn add_gzip_encoding(
     assert!(uri.starts_with('/'));
 
     let mut response = next.run(request).await;
-    if response.status() == StatusCode::OK {
-        let path = format!("{}{}", param.dir, normalize_path(&uri));
-        macro_log::d!("path: {}", path);
 
-        if is_gzip_file(&path).await {
+    if response.status() == StatusCode::OK && param.gzip.iter().any(|it| uri.ends_with(it)) {
+        let mut is_gzip = true;
+
+        // 即使命中文件后缀名，也要读取文件判断是否为 gzip 文件
+        if param.gzip_file {
+            let path = format!("{}{}", param.dir, normalize_path(&uri));
+            macro_log::d!("path: {}", path);
+            is_gzip = is_gzip_file(&path).await;
+        }
+
+        if is_gzip {
             response
                 .headers_mut()
                 .insert(header::CONTENT_ENCODING, HeaderValue::from_static("gzip"));

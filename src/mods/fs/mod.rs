@@ -21,6 +21,14 @@ pub struct Param {
     /// 指定目录
     #[arg(long, short, default_value_t = String::from("."))]
     pub dir: String,
+
+    /// 指定预压缩的 gzip 文件后缀名，如：.gz .terrain
+    #[arg(long, short, default_values_t = vec![String::from(".gz"), String::from(".terrain")])]
+    pub gzip: Vec<String>,
+
+    /// 是否即使命中文件后缀名，也要读取文件判断是否为 gzip 文件
+    #[arg(long = "gf")]
+    pub gzip_file: bool,
 }
 
 pub async fn main(param: Param) -> tokio::io::Result<()> {
